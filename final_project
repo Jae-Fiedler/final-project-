@@ -1,0 +1,113 @@
+# final-project-
+# turning in the final project 
+import pygame
+from pygame import *
+import random
+
+# Initialise the game
+pygame.init()
+
+# Set up the game window
+# this code is creating a variable called " WINDOW_WIDTH," assigning it the number 800 and will be the amount of pixels that the game window's width will be
+# "Window_Height" is a variable as well which is set to be 450 which will be the amount of pixels in the game window's height
+# " window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))" creates a window using the code "set_mode" as that connected to the " pygame.display " code
+# " set_mode()" takes the tuple(?) that contains the height and width of the window;it then creates the a window with the dimensions that are specified with the variables "WINDOW_WIDTH" and "WINDOW_HEIGHT"
+# " pygame.display.set_caption("Chrome Dragon")" is the line os code that that sets the name, or title of the game onto the game window, which would be "Chrome Dragon"
+# " set_caption()" is the function that is setting the game caption onto the game window
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 450
+window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Chrome Dragon")
+
+# Set up colours
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
+
+# Set up the player character
+dragonImg = pygame.image.load('smalldragonn.PNG')
+tigerImg = pygame.image.load('whitetiger.PNG')
+# Stack Overflow gave me some sort of base information/code for how to make an image playable rather than just a rectangle.
+def dragon(x,y):   
+    display.blit(dragonImg, (x,y))
+    pygame.images = dragonImg
+x = player_width = 15
+y = player_height = 25
+player_x = 100
+player_y = WINDOW_HEIGHT - player_height
+player_vel_y = 0
+
+# Set up obstacles
+obstacle_width = 35
+obstacle_height = 25
+obstacle_x = WINDOW_WIDTH
+obstacle_y = WINDOW_HEIGHT - obstacle_height
+
+# Set up game variables
+score = 0
+clock = pygame.time.Clock()
+game_over = False
+
+# Load game sounds
+jump_sound = pygame.mixer.Sound("jump_sound.wav")
+collision_sound = pygame.mixer.Sound("collision_sound.wav")
+
+# Game loop
+while not game_over:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            game_over = True
+        if event.type == KEYDOWN:
+            if event.key == K_SPACE and player_y == WINDOW_HEIGHT - player_height:
+                player_vel_y = -15
+                jump_sound.play()
+
+    # Update player position
+    player_y += player_vel_y
+    player_vel_y += 1
+
+    # Check for collision with ground
+    if player_y >= WINDOW_HEIGHT - player_height:
+        player_y = WINDOW_HEIGHT - player_height
+        player_vel_y = 0
+
+    # Update obstacle position
+    obstacle_x -= 5
+    if obstacle_x < 0:
+        obstacle_x = WINDOW_WIDTH
+        obstacle_y = WINDOW_HEIGHT - obstacle_height
+        score += 1
+
+    # Check for collision with obstacle
+    if player_x + player_width > obstacle_x and player_x < obstacle_x + obstacle_width and player_y + player_height > obstacle_y:
+        collision_sound.play()
+        game_over = True
+        print(' game over')
+
+    # Clear the window
+    window.fill(BLACK)
+
+    # Draw the player character
+    #pygame.draw.rect(window, WHITE, (obstacle_x, obstacle_y, obstacle_width, obstacle_height))
+    theRectangle = pygame.Rect(player_x, player_y, player_width, player_height)
+    window.blit(dragonImg, theRectangle)
+
+    # Draw the obstacle
+   # pygame.draw.rect(window, WHITE, (obstacle_x, obstacle_y, obstacle_width, obstacle_height))
+    theRectangle = pygame.Rect(obstacle_x, obstacle_y, obstacle_width, obstacle_height)
+    window.blit(tigerImg, theRectangle)
+
+
+    # Display the score
+    font = pygame.font.Font(None, 36)
+    score_text = font.render("Score: " + str(score), True, WHITE)
+    window.blit(score_text, (10, 10))
+
+    # Update the game display
+    pygame.display.update()
+
+    # Set the frames per second
+    clock.tick(30)
+
+# Quit the game
+pygame.quit()
